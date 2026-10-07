@@ -134,6 +134,15 @@ def test_chop_cells_mixed_width():
     assert chop_cells(text, 3) == ["あ1", "り2", "34", "が5", "と6", "う7", "8"]
 
 
+@pytest.mark.parametrize("text", ["hello", "ありがとう"])
+def test_chop_cells_zero_width_does_not_crash(text: str) -> None:
+    """Regression (#4234): a width of 0 must not raise. The single-cell fast
+    path built range(0, len(text), 0), which rejects a step of 0, so plain
+    text crashed while wide text did not. Nothing fits in width 0, so the text
+    is returned unsplit."""
+    assert chop_cells(text, 0) == [text]
+
+
 @pytest.mark.parametrize(
     "text,expected",
     [
